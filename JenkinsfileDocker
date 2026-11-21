@@ -18,7 +18,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('selenium-project-docker') {
-                    sh 'sudo docker build -t ${IMAGE_NAME} .'
+                    sh 'docker build -t ${IMAGE_NAME} .'
                 }
             }
         }
@@ -27,7 +27,7 @@ pipeline {
             steps {
                 dir('selenium-project-docker') {
                     sh '''
-                        sudo docker run --name ${CONTAINER_NAME} ${IMAGE_NAME}
+                        docker run --name ${CONTAINER_NAME} ${IMAGE_NAME}
                     '''
                 }
             }
@@ -38,8 +38,8 @@ pipeline {
         always {
             dir('selenium-project-docker') {
                 sh '''
-                    sudo docker rm -f ${CONTAINER_NAME} || true
-                    sudo docker rmi ${IMAGE_NAME} || true
+                    docker rm -f ${CONTAINER_NAME} || true
+                    docker rmi ${IMAGE_NAME} || true
                 '''
 
                 junit allowEmptyResults: true,
