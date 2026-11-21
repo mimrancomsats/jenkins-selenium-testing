@@ -1,0 +1,50 @@
+
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "selenium-test"
+        CONTAINER_NAME = "selenium-test-container"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('selenium-project-docker') {
+                    sh 'sudo docker build -t ${IMAGE_NAME} .'
+                }
+            }
+        }
+
+        stage('Run Selenium Tests') {
+            steps {
+                dir('selenium-project-docker') {
+                    sh '''
+                        sudo docker run --name ${CONTAINER_NAME} ${IMAGE_NAME}
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            dir('selenium-project-docker') {
+                sh '''
+                    sudo docker rm -f ${CONTAINER_NAME} || true
+                    sudo docker rmi ${IMAGE_NAME} || true
+                '''
+
+                junit allowEmptyResults: true,
+                      testResults: 'reports/results.xml'
+            }
+        }
+    }
+}
