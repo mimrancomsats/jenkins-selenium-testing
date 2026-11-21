@@ -41,9 +41,6 @@ pipeline {
                     docker rm -f ${CONTAINER_NAME} || true
                     docker rmi ${IMAGE_NAME} || true
                 '''
-
-                junit allowEmptyResults: true,
-                      testResults: 'reports/results.xml'
             }
         }
     }
