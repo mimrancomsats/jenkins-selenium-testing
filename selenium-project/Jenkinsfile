@@ -24,7 +24,12 @@ pipeline {
             steps {
                 sh '''
                     . selenium-env/bin/activate
-                    pytest -v --junitxml=reports/results.xml test-suite/
+
+                    # Create reports directory
+                    mkdir -p reports
+
+                    # Execute pytest
+                    pytest -v --junitxml=reports/results.xml tests/
                 '''
             }
         }
