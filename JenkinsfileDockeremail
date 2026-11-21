@@ -1,0 +1,68 @@
+
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "selenium-test"
+        CONTAINER_NAME = "selenium-test-container"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('Selenium-project-docker') {
+                    sh 'docker build -t ${IMAGE_NAME} .'
+                }
+            }
+        }
+
+        stage('Run Selenium Tests') {
+            steps {
+                dir('Selenium-project-docker') {
+                    sh '''
+                        docker run --name ${CONTAINER_NAME} ${IMAGE_NAME}
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            dir('Selenium-project-docker') {
+                sh '''
+                    docker rm -f ${CONTAINER_NAME} || true
+                    docker rmi ${IMAGE_NAME} || true
+                '''
+            }
+
+            emailext(
+                to: 'imrantaurus2003@gmail.com',
+                subject: "Selenium Test Results: ${currentBuild.currentResult} - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+Hello QA Team,
+
+The Selenium test execution has completed.
+
+Build Status: ${currentBuild.currentResult}
+Project: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+
+Please visit the following link to view the build details:
+
+${env.BUILD_URL}
+
+Regards,
+Jenkins CI/CD Pipeline
+"""
+            )
+        }
+    }
+}
