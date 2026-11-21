@@ -32,7 +32,7 @@ pipeline {
                         mkdir -p reports
 
                         # Execute pytest
-                        pytest -v --junitxml=reports/results.xml tests/
+                        pytest -v --junitxml=reports/results.xml test-suite/
                     '''
                 }
             }
