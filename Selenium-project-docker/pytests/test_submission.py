@@ -1,4 +1,6 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 def test_form_submission(driver):
 
@@ -10,6 +12,9 @@ def test_form_submission(driver):
     submit_button = driver.find_element(By.TAG_NAME, "button")
     submit_button.click()
 
-    message = driver.find_element(By.ID, "message")
+    # Wait up to 10 seconds for the message to appear
+    message = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.ID, "message"))
+    )
 
     assert message.text == "Received!"
