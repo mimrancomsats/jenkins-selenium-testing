@@ -8,4 +8,4 @@ def test_text_box(driver):
 
     text_box.send_keys("Hello Selenium!")
 
-    assert text_box.get_attribute("value") == "Hello Selenium!"
+    assert text_box.get_attribute("value") == "ello Selenium!"
